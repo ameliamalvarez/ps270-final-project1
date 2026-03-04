@@ -11,7 +11,7 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to high school graduation rates in areas of poverty. I would like to look at low income areas and see if they have lower graduation rates compared to more affluent areas. 
+I am interested in exploring data related to high school graduation rates in areas of poverty. I would like to look at low income areas and see if they have lower graduation rates compared to more affluent areas. add something silly
 
 ## Project Hypothesis
 
