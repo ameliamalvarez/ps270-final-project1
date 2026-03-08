@@ -1,0 +1,18 @@
+Label,Estimate,Margin of Error
+Total,"41,282","±1,577"
+"Less than $10,000",3.40%,±1.5
+"$10,000 to $14,999",1.80%,±1.2
+"$15,000 to $24,999",6.90%,±2.4
+"$25,000 to $34,999",6.50%,±2.0
+"$35,000 to $49,999",11.50%,±3.0
+"$50,000 to $74,999",18.90%,±3.8
+"$75,000 to $99,999",12.10%,±2.6
+"$100,000 to $149,999",24.30%,±3.5
+"$150,000 to $199,999",7.80%,±2.5
+"$200,000 or more",6.60%,±1.9
+Median income (dollars),"76,961","±8,492"
+Mean income (dollars),"93,789","±5,510"
+PERCENT ALLOCATED,,
+Household income in the past 12 months,28.10%,(X)
+Family income in the past 12 months,(X),(X)
+Nonfamily income in the past 12 months,(X),(X)

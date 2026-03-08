@@ -1,0 +1,69 @@
+Label,estimiate,margin of error
+AGE BY EDUCATIONAL ATTAINMENT,,
+Population 18 to 24 years,"3,629",±515
+Less than high school graduate,273,±120
+High school graduate (includes equivalency),"1,635",±394
+Some college or associate's degree,"1,404",±299
+Bachelor's degree or higher,317,±108
+Population 25 years and over,"44,462",±770
+Less than 9th grade,"1,192",±286
+"9th to 12th grade, no diploma","2,346",±416
+High school graduate (includes equivalency),"13,808",±983
+"Some college, no degree","9,656",±735
+Associate's degree,"4,309",±571
+Bachelor's degree,"9,744",±737
+Graduate or professional degree,"3,407",±410
+High school graduate or higher,"40,924",±834
+Bachelor's degree or higher,"13,151",±833
+Population 25 to 34 years,"10,829",±730
+High school graduate or higher,"10,318",±728
+Bachelor's degree or higher,"4,619",±578
+Population 35 to 44 years,"7,795",±695
+High school graduate or higher,"7,240",±626
+Bachelor's degree or higher,"3,309",±445
+Population 45 to 64 years,"15,507",±692
+High school graduate or higher,"13,912",±666
+Bachelor's degree or higher,"3,478",±361
+Population 65 years and over,"10,331",±774
+High school graduate or higher,"9,454",±737
+Bachelor's degree or higher,"1,745",±371
+RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT,,
+White alone,"34,753","±1,206"
+High school graduate or higher,"32,735","±1,205"
+Bachelor's degree or higher,"10,711",±744
+"White alone, not Hispanic or Latino","34,097","±1,207"
+High school graduate or higher,"32,102","±1,188"
+Bachelor's degree or higher,"10,570",±729
+Black alone,"2,220",±625
+High school graduate or higher,"2,012",±606
+Bachelor's degree or higher,346,±170
+American Indian or Alaska Native alone,418,±216
+High school graduate or higher,351,±202
+Bachelor's degree or higher,173,±175
+Asian alone,"1,197",±427
+High school graduate or higher,"1,089",±395
+Bachelor's degree or higher,584,±216
+Native Hawaiian and Other Pacific Islander alone,0,±23
+High school graduate or higher,0,±23
+Bachelor's degree or higher,0,±23
+Some other race alone,"2,039",±392
+High school graduate or higher,"1,477",±339
+Bachelor's degree or higher,481,±264
+Two or more races,"3,835",±567
+High school graduate or higher,"3,260",±489
+Bachelor's degree or higher,856,±228
+Hispanic or Latino Origin,"5,324",±603
+High school graduate or higher,"4,280",±520
+Bachelor's degree or higher,"1,097",±348
+POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL,,
+Less than high school graduate,(X),(X)
+High school graduate (includes equivalency),(X),(X)
+Some college or associate's degree,(X),(X)
+Bachelor's degree or higher,(X),(X)
+MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS),,
+Population 25 years and over with earnings,"50,146","±1,549"
+Less than high school graduate,"35,967","±3,783"
+High school graduate (includes equivalency),"44,305","±3,195"
+Some college or associate's degree,"49,444","±2,205"
+Bachelor's degree,"59,823","±5,439"
+Graduate or professional degree,"63,600","±5,625"
