@@ -1,12 +1,11 @@
 ---
 title: "PS270 Final Project"
 author: "Amelia Alvarez"
-description: "My final project"
+description: "Income vs Education"
 output:
   distill::distill_article:
     self_contained: false
 ---
-
 
 
 ## Project thoughts
@@ -18,25 +17,149 @@ I am interested in exploring data related to high school graduation rates in are
 My research question examines how neighborhood income level is related to high school graduation rates. Are students in low-income areas less likely to graduate from high school compared to students in higher-income areas? My hypothesis is that high school students in low-income areas are less likely to graduate from high school than students in higher-income areas. This hypothesis is grounded in the thought that schools in low-income areas often receive fewer financial resources due to property tax-based funding structures. This can result in larger class sizes, fewer experienced teachers, limited access to advanced coursework, fewer counselors, and academic support services. From a behavioral perspective, economic hardship can also increase stress at home, require students to work part-time jobs, or reduce parental availability for academic support. These disadvantages systematically reduce academic performance and increase dropout risk. My explanatory variable of interest is the socioeconomic status of the area. This can be measured by median household income in the school district or ZIP code, the percentage of students eligible for free or reduced-price lunch, and the poverty rate in the census tract or district. These measures vary across different areas, which allows us to observe variation across schools or districts in income levels. The outcome variable of interest is high school graduation rates. This can be measured by the four-year cohort graduation rate, which is the percentage of students who graduate within four years of entering ninth grade, or by looking at the dropout rate. My hypothesis would be supported if the data show a negative relationship between area income and graduation rates and if schools in lower-income areas consistently show lower graduation rates. My hypothesis would be weakened if the data show no relationship between area income and graduation rates, or if, after controlling for other variables such as school size, urban or rural location, and racial composition, income is no longer statistically significant, which would challenge the source of my hypothesis.
 
 
-```{r}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
+library(dplyr)
 library(readr)
+library(readxl)
+library(ggplot2)
 ```
-```{r}
-data1 <- readr::read_csv("data/kenosha.income.csv")
-data2 <- readr::read_csv("data/kenosha_education(Sheet1).csv")
-data3 <- readr::read_csv("data/madison.income.csv")
-data4 <- readr::read_csv("data/madison_education(Sheet2).csv")
-data5 <- readr::read_csv("data/westallis.income.csv")
-data6 <- readr::read_csv("data/west allis_education(Sheet1).csv")
-```
-```{r}
-head(data1)
-head(data2)
-head(data3)
-head(data4)
-head(data5)
-head(data6)
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+data1  <- readr::read_csv("data/kenosha.income.csv")
+data2  <- readr::read_csv("data/kenosha_education(Sheet1).csv")
+data3  <- readr::read_csv("data/madison.income.csv")
+data4  <- readr::read_csv("data/madison_education(Sheet2).csv")
+data5  <- readr::read_csv("data/westallis.income.csv")
+data6  <- readr::read_csv("data/west allis_education(Sheet1).csv")
+data7  <- read_excel("data/beloit.education.xlsx")
+data8  <- read_excel("data/beloit.income.xlsx")
+data9  <- read_excel("data/cedarburg.education.xlsx")
+data10 <- read_excel("data/cedarburg.income.xlsx")
+data11 <- read_excel("data/fitchburg.education.xlsx")
+data12 <- read_excel("data/fitchburg.income.xlsx")
+data13 <- read_excel("data/janesville.education.xlsx")
+data14 <- read_excel("data/janesville.income.xlsx")
+data15 <- read_excel("data/middleton.education.xlsx")
+data16 <- read_excel("data/middleton.income.xlsx")
+data17 <- read_excel("data/monroe.education.xlsx")
+data18 <- read_excel("data/monroe.income.xlsx")
+data19 <- read_excel("data/Oconomowoc.education.xlsx")
+data20 <- read_excel("data/Oconomowoc.income.xlsx")
 ```
 
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Fix encoding on all datasets FIRST before anything else
+all_datasets <- c("data1","data2","data3","data4","data5","data6","data7",
+                  "data8","data9","data10","data11","data12","data13","data14",
+                  "data15","data16","data17","data18","data19","data20")
+
+for (name in all_datasets) {
+  df <- get(name)
+  df[] <- lapply(df, function(col) {
+    if (is.character(col)) {
+      col <- iconv(col, from = "", to = "UTF-8", sub = "byte")
+      col <- iconv(col, from = "UTF-8", to = "UTF-8", sub = "")
+    }
+    col
+  })
+  assign(name, df)
+}
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Rename columns to be consistent across all datasets
+data1  <- data1  %>% rename(label = Label, estimate = Estimate, margin_of_error = `Margin of Error`)
+data2  <- data2  %>% rename(label = Label, margin_of_error = `margin of error`)
+data3  <- data3  %>% rename(margin_of_error = `margin of error`)
+data4  <- data4  %>% rename(label = Label, estimate = Estimate, margin_of_error = `Margin of error`)
+data5  <- data5  %>% rename(label = lable, margin_of_error = `margin of error`)
+data6  <- data6  %>% rename(label = Label, estimate = estimiate, margin_of_error = `margin of error`)
+data7  <- data7  %>% rename(label = Label, margin_of_error = `margin of error`)
+data8  <- data8  %>% rename(margin_of_error = `margin of error`)
+data9  <- data9  %>% rename(label = Label, margin_of_error = `margin of error`)
+data10 <- data10 %>% rename(margin_of_error = `margin of error`)
+data11 <- data11 %>% rename(label = Label, margin_of_error = `margin of error`)
+data12 <- data12 %>% rename(margin_of_error = `margin of error`)
+data13 <- data13 %>% rename(label = Label, margin_of_error = `margin of error`)
+data14 <- data14 %>% rename(margin_of_error = `margin of error`)
+data15 <- data15 %>% rename(margin_of_error = `margin of error`)
+data16 <- data16 %>% rename(margin_of_error = `margin of error`)
+data17 <- data17 %>% rename(estimate = education, margin_of_error = `margin of error`)
+data18 <- data18 %>% rename(margin_of_error = `margin of error`)
+data19 <- data19 %>% rename(margin_of_error = `margin of error`)
+data20 <- data20 %>% rename(margin_of_error = `margin of error`)
+```
+
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+get_bachelors <- function(edu_data) {
+  total_pop <- as.numeric(gsub("[,±]", "", edu_data$estimate[7]))
+  bachelors <- as.numeric(gsub("[,±]", "", edu_data$estimate[16]))
+  round((bachelors / total_pop) * 100, 1)
+}
+
+get_high_income <- function(inc_data) {
+  inc_data %>%
+    filter(grepl("\\$75,000 to \\$99,999", label, ignore.case = TRUE)) %>%
+    mutate(estimate = as.numeric(gsub("[%,\u00b1]", "", estimate))) %>%
+    pull(estimate) %>%
+    first()
+}
+
+# Build city dataframe
+city_df <- data.frame(
+  city = c("Kenosha", "West Allis", "Beloit", "Cedarburg",
+           "Fitchburg", "Janesville", "Middleton", "Monroe", "Oconomowoc"),
+
+  education = c(
+    get_bachelors(data2),
+    get_bachelors(data6),
+    get_bachelors(data7),
+    get_bachelors(data9),
+    get_bachelors(data11),
+    get_bachelors(data13),
+    get_bachelors(data15),
+    get_bachelors(data17),
+    get_bachelors(data19)
+  ),
+
+  income = c(
+    get_high_income(data1),
+    get_high_income(data5),
+    get_high_income(data8),
+    get_high_income(data10),
+    get_high_income(data12),
+    get_high_income(data14),
+    get_high_income(data16),
+    get_high_income(data18),
+    get_high_income(data20)
+  )
+)
+
+```
+
+
+
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7}
+ggplot(city_df, aes(x = education, y = income, label = city)) +
+  geom_point(color = "darkgreen", size = 4) +
+  geom_text(vjust = -0.8, size = 3.5, fontface = "bold") +
+  geom_smooth(method = "lm", se = TRUE, color = "red",
+              linetype = "dashed", alpha = 0.15) +
+  labs(
+    title = "Education vs. Income in Wisconsin Cities",
+    x = "% of Adults with a Bachelor's Degree or Higher",
+    y = "% of Households Earning $75,000 to $99,999"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(20, 40, 20, 40)
+  )
+```
 
