@@ -163,3 +163,8 @@ ggplot(city_df, aes(x = education, y = income, label = city)) +
   )
 ```
 
+## Analysis
+
+At first glance, the trend line suggests a slight negative relationship between the two variables, meaning cities with higher education rates do not necessarily have higher groups of households in the $75,000–$99,999 income bracket. This is likely reflecting the fact that highly educated cities like Middleton and Oconomowoc have more households earning above $99,999, pushing residents out of this specific income bracket rather than into it.  Wealthier, more educated cities may have fewer households in the $75,000–$99,999 range because their incomes skew even higher.
+
+Cities like Monroe, Beloit, and West Allis cluster on the left side of the chart with lower education rates but mid-range income concentrations, while Middleton and Oconomowoc sit on the far right with high education rates but lower concentrations in this specific income band. Kenosha stands out as having both a low education rate and a low income concentration.
