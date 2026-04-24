@@ -168,3 +168,103 @@ ggplot(city_df, aes(x = education, y = income, label = city)) +
 At first glance, the trend line suggests a slight negative relationship between the two variables, meaning cities with higher education rates do not necessarily have higher groups of households in the $75,000–$99,999 income bracket. This is likely reflecting the fact that highly educated cities like Middleton and Oconomowoc have more households earning above $99,999, pushing residents out of this specific income bracket rather than into it.  Wealthier, more educated cities may have fewer households in the $75,000–$99,999 range because their incomes skew even higher.
 
 Cities like Monroe, Beloit, and West Allis cluster on the left side of the chart with lower education rates but mid-range income concentrations, while Middleton and Oconomowoc sit on the far right with high education rates but lower concentrations in this specific income band. Kenosha stands out as having both a low education rate and a low income concentration.
+
+
+```{r}
+install.packages("tidycensus")
+```
+
+```{r}
+library(tidyverse)
+library(tidycensus)
+```
+
+
+
+```{r}
+census_api_key("1956434ce467efbcc6650c2a36eb9a5c4f758f22", install = TRUE)
+```
+```{r}
+education <- get_acs(
+  geography = "place",
+  state = "WI",
+  variables = "DP02_0068P",
+  year = 2023,
+  survey = "acs5"
+)
+```
+
+
+```{r}
+income <- get_acs(
+  geography = "place",
+  state = "WI",
+  variables = "DP03_0062",
+  year = 2023,
+  survey = "acs5"
+)
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning= FLASE}
+
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+
+census_api_key("1956434ce467efbcc6650c2a36eb9a5c4f758f22")
+
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning= FLASE}
+
+education <- get_acs(
+  geography = "place",
+  state = "WI",
+  variables = "DP02_0066P",
+  year = 2023,
+  survey = "acs5"
+) %>%
+  select(GEOID, NAME, estimate) %>%
+  rename(education = estimate)
+
+
+income <- get_acs(
+  geography = "place",
+  state = "WI",
+  variables = "DP03_0062",
+  year = 2023,
+  survey = "acs5"
+) %>%
+  select(GEOID, NAME, estimate) %>%
+  rename(income = estimate)
+
+city_df <- inner_join(education, income, by = c("GEOID", "NAME")) %>%
+  mutate(NAME = gsub(", Wisconsin", "", NAME)) %>%
+  filter(!is.na(education) & !is.na(income))
+
+```
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 12, fig.height = 8}
+ggplot(city_df, aes(x = education, y = income)) +
+  geom_point(color = "purple", size = 2, alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "red",
+              linetype = "dashed", alpha = 0.15) +
+  labs(
+    title = "Education vs. Income Across Wisconsin Cities",
+    x = "% of Adults with a High School Diploma or Higher",
+    y = "Median Household Income ($)",
+    caption = "Source: U.S. Census Bureau, American Community Survey 5-Year Estimates (2023)"
+  ) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "gray50"),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(20, 40, 20, 40)
+  )
+```
+
