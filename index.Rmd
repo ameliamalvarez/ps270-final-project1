@@ -1,5 +1,5 @@
 ---
-title: "PS270 Final Project"
+title: "Education and Income Across American Cities"
 author: "Amelia Alvarez"
 description: "Income vs Education"
 output:
@@ -8,13 +8,16 @@ output:
 ---
 
 
-## Project Thoughts
+## Introduction
 
-I am interested in exploring data related to high school graduation rates in areas of poverty. I would like to look at low income areas and see if they have lower graduation rates compared to more affluent areas.
+High school graduation rates are one of the most important indicators of long term economic mobility and community well being. Cities with lower graduation rates tend to face higher unemployment and reduced civic participation. Understanding what drives differences in graduation rates across cities is therefore an important policy question.
+This project examines how median household income at the city level is related to high school graduation rates across cities in Wisconsin and four other states chosen at random — New York, Colorado, Louisiana, and Wyoming.
 
-## Project Hypothesis
+My hypothesis is that cities with higher median household incomes will have higher high school graduation rates. This hypothesis is set in both behavioral and institutional explanations. Institutionally, wealthier communities tend to have better funded schools due to higher property taxes, resulting in smaller class sizes, more experienced teachers, and greater access to academic support. Behaviorally, economic hardship increases stress at home, may require students to work part time jobs, and reduces parental availability for academic support, all of which increase dropout risk. 
 
-My research question examines how city income level is related to high school graduation rates. Are students in low-income areas less likely to graduate from high school compared to students in higher-income areas? My hypothesis is that high school students in low-income areas are less likely to graduate from high school than students in higher-income areas. This hypothesis is grounded in the thought that schools in low-income areas often receive fewer financial resources due to property tax-based funding structures. This can result in larger class sizes, fewer experienced teachers, limited access to advanced coursework, fewer counselors, and academic support services. From a behavioral perspective, economic hardship can also increase stress at home, require students to work part-time jobs, or reduce parental availability for academic support. These disadvantages systematically reduce academic performance and increase dropout risk. My explanatory variable of interest is the socioeconomic status of the area. This can be measured by median household income in the school district or ZIP code, the percentage of students eligible for free or reduced-price lunch, and the poverty rate in the census tract or district. These measures vary across different areas, which allows us to observe variation across schools or districts in income levels. The outcome variable of interest is high school graduation rates. This can be measured by the four-year cohort graduation rate, which is the percentage of students who graduate within four years of entering ninth grade, or by looking at the dropout rate. My hypothesis would be supported if the data show a negative relationship between area income and graduation rates and if schools in lower-income areas consistently show lower graduation rates. My hypothesis would be weakened if the data show no relationship between area income and graduation rates, or if, after controlling for other variables such as school size, urban or rural location, and racial composition, income is no longer statistically significant, which would challenge the source of my hypothesis.
+The explanatory variable being used is median household income, measured in dollars at the city level using the U.S. Census Bureau's American Community Survey 5-Year Estimates. This variable shows the variation across cities, ranging from low income urban areas to wealthy suburbs, which allows us to observe and study differences in income levels. The outcome variable is the high school graduation rate, measured as the percentage of adults 25 and older who have earned a high school diploma or equivalent in each city, also drawn from the American Community Survey. 
+
+My hypothesis would be supported if the data show a positive relationship between median household income and graduation rates, meaning cities with higher incomes consistently show higher graduation rates. My hypothesis would be weakened if the data show no statistically significant relationship between the two variables, or if income loses its significance after controlling for other factors such as geographic location or city size.
 
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
@@ -340,6 +343,10 @@ library(patchwork)
 
 ## Analysis
 
+The scatter plots above display the relationship between high school graduation rates and median household income across the cities. Across all five states, a clear positive trend is visible. The data shows cities with higher percentages of adults holding a high school diploma tend to have higher median household incomes. This pattern is consistent with my hypothesis and is supported by the upward sloping trend line in every state.
+
+With all these state data taken together, the evidence consistently supports my hypothesis that cities with higher median household incomes tend to have higher high school graduation rates. The relationship appears in every state regardless of geographic region, state size, or overall income level, suggesting it is a robust and systematic pattern rather than a coincidence specific to one location.
+
 
 
 ```{r load-libraries, echo = FALSE, message = FALSE, warning = FALSE}
@@ -418,35 +425,15 @@ city_df %>%
 
 
 
-```{r outcome-plot, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 
-ggplot(city_df, aes(x = median_income, fill = state)) +
-  geom_histogram(bins = 40, alpha = 0.7, color = "white") +
-  scale_x_continuous(labels = scales::dollar_format()) +
-  labs(
-    title = "Distribution of Median Household Income",
-    subtitle = "Across all cities in Colorado, Louisiana, New York, Wisconsin, and Wyoming",
-    x = "Median Household Income ($)",
-    y = "Number of Cities",
-    fill = "State",
-    caption = "Source: U.S. Census Bureau, ACS 5-Year Estimates (2023)"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "gray50"),
-    panel.grid.minor = element_blank(),
-    plot.margin = margin(20, 40, 20, 40)
-  )
-```
 
 
 
 ```{r regression, echo = FALSE, message = FALSE, warning = FALSE}
-# Run the regression
+
 model <- lm(median_income ~ hs_graduation_rate, data = city_df)
 
-# Display regression output nicely
+
 modelsummary(
   model,
   stars = TRUE,
