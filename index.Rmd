@@ -1,7 +1,7 @@
 ---
 title: "Education and Income Across American Cities"
 author: "Amelia Alvarez"
-description: "Income vs Education"
+description: "How median household income at the city level is related to high school graduation rates across cities in Wisconsin, New York, Colorado, Louisiana, and Wyoming"
 output:
   distill::distill_article:
     self_contained: false
@@ -20,20 +20,25 @@ The explanatory variable being used is median household income, measured in doll
 My hypothesis would be supported if the data show a positive relationship between median household income and graduation rates, meaning cities with higher incomes consistently show higher graduation rates. My hypothesis would be weakened if the data show no statistically significant relationship between the two variables, or if income loses its significance after controlling for other factors such as geographic location or city size.
 
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
+```{r load-libraries, include = FALSE}
 library(tidyverse)
 library(dplyr)
 library(readr)
 library(readxl)
 library(ggplot2)
 library(tidycensus)
+library(knitr)
+library(kableExtra)
+library(modelsummary)
+library(patchwork)
+library(scales)
 ```
 
 
+## Data
 
 
-
-```{r}
+```{r load-data-wisconsin, include = FALSE}
 education <- get_acs(
   geography = "place",
   state = "WI",
@@ -44,7 +49,7 @@ education <- get_acs(
 ```
 
 
-```{r}
+```{r load-data-wisconsin2, include = FALSE}
 income <- get_acs(
   geography = "place",
   state = "WI",
@@ -60,7 +65,7 @@ census_api_key("1956434ce467efbcc6650c2a36eb9a5c4f758f22")
 ```
 
 
-```{r, echo = FALSE, message = FALSE, warning= FALSE}
+```{r load-data-wisconsin3, include = FALSE}
 
 education <- get_acs(
   geography = "place",
@@ -110,10 +115,10 @@ plot_wi <-ggplot(city_df, aes(x = education, y = income)) +
     plot.margin = margin(20, 40, 20, 40)
   )
 
-plot_wi
+
 ```
 
-```{r, echo = FALSE, message = FALSE, warning= FALSE}
+```{r load-data-new york, echo = FALSE, message = FALSE, warning= FALSE}
 
 education <- get_acs(
   geography = "place",
@@ -162,12 +167,12 @@ plot_ny <-ggplot(city_df, aes(x = education, y = income)) +
     plot.margin = margin(20, 40, 20, 40)
   )
 
-plot_ny 
+
 ```
 
 
 
-```{r, echo = FALSE, message = FALSE, warning= FALSE}
+```{r load-data-wyoming, echo = FALSE, message = FALSE, warning= FALSE}
 
 education <- get_acs(
   geography = "place",
@@ -216,7 +221,6 @@ plot_wy <-ggplot(city_df, aes(x = education, y = income)) +
     plot.margin = margin(20, 40, 20, 40)
   )
 
-plot_wy
 ```
 
 
@@ -224,7 +228,7 @@ plot_wy
 
 
 
-```{r, echo = FALSE, message = FALSE, warning= FALSE}
+```{r load-data-colorado, echo = FALSE, message = FALSE, warning= FALSE}
 
 education <- get_acs(
   geography = "place",
@@ -273,13 +277,13 @@ plot_co <-ggplot(city_df, aes(x = education, y = income)) +
     plot.margin = margin(20, 40, 20, 40)
   )
 
-plot_co
+
 ```
 
 
 
 
-```{r, echo = FALSE, message = FALSE, warning= FALSE}
+```{r load-data-louisiana, echo = FALSE, message = FALSE, warning= FALSE}
 
 education <- get_acs(
   geography = "place",
@@ -327,37 +331,18 @@ plot_la <-ggplot(city_df, aes(x = education, y = income)) +
     panel.grid.minor = element_blank(),
     plot.margin = margin(20, 40, 20, 40)
   )
-plot_la
+
 ```
 
-```{r}
 
-library(patchwork)
-```
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 19, fig.height = 12}
+```{r plot-all states, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 19, fig.height = 12}
 (plot_wi | plot_ny | plot_wy) /
 (plot_co | plot_la)
 ```
 
-
-## Analysis
-
-The scatter plots above display the relationship between high school graduation rates and median household income across the cities. Across all five states, a clear positive trend is visible. The data shows cities with higher percentages of adults holding a high school diploma tend to have higher median household incomes. This pattern is consistent with my hypothesis and is supported by the upward sloping trend line in every state.
-
-With all these state data taken together, the evidence consistently supports my hypothesis that cities with higher median household incomes tend to have higher high school graduation rates. The relationship appears in every state regardless of geographic region, state size, or overall income level, suggesting it is a robust and systematic pattern rather than a coincidence specific to one location.
-
-
-
-```{r load-libraries, echo = FALSE, message = FALSE, warning = FALSE}
-library(knitr)
-library(modelsummary)
-```
-
-```{r load-data, echo = FALSE, message = FALSE, warning = FALSE}
-
+```{r load-data, include = FALSE}
 states <- c("WI", "NY", "WY", "CO", "LA")
-
 
 education <- get_acs(
   geography = "place",
@@ -369,7 +354,6 @@ education <- get_acs(
   select(GEOID, NAME, estimate) %>%
   rename(hs_graduation_rate = estimate)
 
-
 income <- get_acs(
   geography = "place",
   state = states,
@@ -380,31 +364,21 @@ income <- get_acs(
   select(GEOID, NAME, estimate) %>%
   rename(median_income = estimate)
 
-
 city_df <- inner_join(education, income, by = c("GEOID", "NAME")) %>%
   mutate(
-    # Extract state name from the NAME column
     state = case_when(
-      grepl("Wisconsin", NAME)   ~ "Wisconsin",
-      grepl("New York", NAME)    ~ "New York",
-      grepl("Wyoming", NAME)     ~ "Wyoming",
-      grepl("Colorado", NAME)    ~ "Colorado",
-      grepl("Louisiana", NAME)   ~ "Louisiana"
+      grepl("Wisconsin", NAME)  ~ "Wisconsin",
+      grepl("New York", NAME)   ~ "New York",
+      grepl("Wyoming", NAME)    ~ "Wyoming",
+      grepl("Colorado", NAME)   ~ "Colorado",
+      grepl("Louisiana", NAME)  ~ "Louisiana"
     ),
-    
     NAME = gsub(", Wisconsin|, New York|, Wyoming|, Colorado|, Louisiana", "", NAME)
   ) %>%
   filter(!is.na(hs_graduation_rate) & !is.na(median_income) & !is.na(state))
 ```
 
-```{r}
-
-library(kableExtra)
-```
-
-
 ```{r summary-table, echo = FALSE, message = FALSE, warning = FALSE}
-
 city_df %>%
   group_by(state) %>%
   summarise(
@@ -424,6 +398,46 @@ city_df %>%
 ```
 
 
+### Analysis of Census Data
+
+The scatter plots and table above display the relationship between high school graduation rates and median household income across the cities. Across all five states, a clear positive trend is visible. The data shows cities with higher percentages of adults holding a high school diploma tend to have higher median household incomes. This pattern is consistent with my hypothesis and is supported by the upward sloping trend line in every state.
+
+With all these state data taken together, the evidence consistently supports my hypothesis that cities with higher median household incomes tend to have higher high school graduation rates. The relationship appears in every state regardless of geographic region, state size, or overall income level, suggesting it is a robust and systematic pattern rather than a coincidence specific to one location.
+
+
+
+
+
+
+
+
+
+## Results Breakdown
+
+```{r outcome-plot, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
+
+ggplot(city_df, aes(x = median_income, fill = state)) +
+  geom_histogram(bins = 40, alpha = 0.7, color = "white") +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(
+    title = "Distribution of Median Household Income",
+    subtitle = "Across all cities in Colorado, Louisiana, New York, Wisconsin, and Wyoming",
+    x = "Median Household Income ($)",
+    y = "Number of Cities",
+    fill = "State",
+    caption = "Source: U.S. Census Bureau, ACS 5-Year Estimates (2023)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "gray50"),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(20, 40, 20, 40)
+  )
+```
+
+### Analysis of Distribution of Median Household Income
+The histogram above displays the distribution of median household income across all cities in the five states. The distribution is right-skewed which means the majority of cities cluster at lower to middle income levels while a smaller number of cities have very high median incomes. Most cities fall between $40,000 and $100,000 in median household income. This suggests that while there are some very wealthy outliers the typical city in this dataset has a moderate median household income. New York and Louisiana contribute the most cities to the dataset, while Wyoming contributes the fewest. This distribution confirms that there is purposeful variation in median household income across cities in this sample, which plays a large role when studying its relationship with high school graduation rates.
 
 
 
@@ -446,3 +460,19 @@ modelsummary(
   title = "Regression: Effect of High School Graduation Rate on Median Household Income"
 )
 ```
+### Regression Analysis
+The regression results show a strong, positive, and statistically significant relationship between the two variables. The main coefficient is the High School Graduation Rate coefficient of 2,582. This means that for every one percentage point increase in a city's high school graduation rate, the median household income increases by $2,582. This is a substantively meaningful difference that suggests education levels play an important role in determining the economic well being of a community.
+The coefficient is marked with *** means it is statistically significant at the 0.001 level. This means there is less than a 0.1% chance that this relationship occurred by random chance alone. The standard error of 51 is very small relative to the coefficient of 2,582, which further confirms the precision and reliability of this estimate. With nearly 3,000 cities in the sample, there is high confidence that this relationship is real and not a product of random variation.
+
+
+
+## Conclusion
+This project examined the relationship between high school graduation rates and median household income across 2,992 cities in five states, Wisconsin, New York, Colorado, Louisiana, and Wyoming, using data from the U.S. Census Bureau's American Community Survey 5-Year Estimates. The results provide strong support for my  hypothesis that cities with higher high school graduation rates tend to have higher median household incomes. The regression analysis found that each one percentage point increase in a city's high school graduation rate is associated with a $2,582 increase in median household income, a relationship that is statistically significant at the 0.001 level and consistent across all five states examined.
+However, there are several important limitations to this analysis that prevent drawing causal conclusions. First, because this is a cross-sectional study observing cities at a single point in time, we cannot determine the direction of causality. It is equally plausible that wealthier communities produce higher graduation rates rather than the other way around. 
+Second, there are likely several confounding variables that influence both graduation rates and income simultaneously, including urban versus rural location, racial and demographic make-up, regional cost of living, and local industry and employment opportunities. 
+Finally, limiting the analysis to five states means the results may not generalize to the entire United States. Looking at all 50 states could help further the analysis, though seeing the trend among five vastly different states is a good indicator for the entire nation.
+If given more time and resources, this analysis could be improved in several ways. Including data from all 50 states would significantly increase the sample size. Adding control variables such as poverty rate, urbanization, and racial make-up to the regression would help isolate what could be the true effect of education on income. Ideally, using data that tracks cities over time would allow for a more rigorous causal analysis and would help determine whether changes in graduation rates actually lead to changes in income levels over time.
+Despite these limitations, this analysis provides evidence that education and economic well being are deeply interconnected at the city level, and that investing in high school graduation rates may be one of the most meaningful steps a city can take toward improving the financial lives of its residents.
+
+
+
